@@ -1,0 +1,255 @@
+#funções do programa
+# 1 cadastrar usuário final
+# 2 registrar login e senha na pasta usuarios_senha.txt
+# 3 não é possível cadastrar 2 usuários com login igual.
+# irei adiocionar função de não deixar ver a senha ao cadastrar ou ao entrar no login
+
+
+################### vou precisar colocar todo o formulário no FOR para conseguir fazer um impressão melhor ###############
+################## futuramente vou precisar de uma API para colocar integração como WHATSAPP ################
+################## Vou por um match #case para fazer um menu, após terminar o login. 
+# editar campo de "1" e "2" colocar para campo de "Sim" e "Nao"
+import os
+import time
+senha=[]
+justificativa = []
+
+ARQUIVO_USUARIOS = "usuarios_senha.txt" #txt onde o banco de dados será gravado login e senha
+
+def carregar_usuarios():
+    """Carrega os usuários cadastrados a partir do arquivo."""
+    usuarios = {}
+    if os.path.exists(ARQUIVO_USUARIOS):
+        with open(ARQUIVO_USUARIOS, "r") as file: # r  de leitura do arquivo
+            for linha in file:
+                mudid, senha = linha.strip().split(":")
+                usuarios[mudid] = senha
+    return usuarios
+
+def salvar_usuario(mudid, senha):
+    """Salva um novo usuário no arquivo."""
+    with open(ARQUIVO_USUARIOS, "a") as file:
+        file.write(f"{mudid}:{senha}\n")
+
+def cadastrar_usuario():
+    """Realiza o cadastro de um novo usuário."""
+    usuarios = carregar_usuarios()
+    mudid = input("Escolha seu login (mudid): ").strip()
+    
+    if mudid in usuarios:
+        print("Erro: Esse login já está cadastrado. Tente outro.")
+        return False
+
+    senha = input("Escolha sua senha: ").strip()
+    salvar_usuario(mudid, senha)
+    print("Cadastro realizado com sucesso!")
+    return True
+
+def login():
+    """Realiza o login do usuário."""
+    usuarios = carregar_usuarios()
+    mudid = input("Digite seu login (mudid): ").strip()
+    senha = input("Digite sua senha: ").strip()
+    
+    if mudid in usuarios and usuarios[mudid] == senha:
+        print("Login bem-sucedido! Acessando o programa...")
+        time.sleep(3)  # Aguarda 2 segundos antes de seguir   # estava procurando algo assim para dar um encremento no programa.
+        return True
+    else:
+        print("Erro: Login ou senha incorretos.")
+        return False
+
+def main():
+    """Menu principal para cadastro ou login."""
+    while True:
+        print("\n1 - Cadastrar\n2 - Login\n3 - Sair")
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == "1":
+            cadastrar_usuario()
+        elif opcao == "2":
+            if login():
+                os.system("cls")
+                print("Agora você pode acessar o restante do programa.")
+                break  # Sai do loop e acessa o programa principal ( eu estava com dificuldade nessa parten porque
+            # eu estava colocando "true return" igual quando errava a senha, então msm acertando o login, eu n avançava para o programa)
+        #elif opcao == "3":    #### essa linha estava quebrando o  código, conseguia burlar o login e avançar no formulário, n apaguei para consertar depois. talvez o else em vez do elif  evitaria de burlar. 
+            #print("Saindo...")
+            #return False
+        else:
+            print("Opção inválida, tente novamente.")
+
+if __name__ == "__main__":
+    main()
+
+#passagem de turno.
+#requisição de epi
+
+ehs=("Houve ocorrência de EHS?")
+resposta=input("Houve ocorrência de EHS?\n 1 - Sim\n 2 - Não\n")
+if resposta == "1":
+    positivo= input("Qual foi a ocorrência?\n")
+    justificativa.append("SIM, "+positivo)
+    justificativa.append(ehs)
+elif resposta == "2":
+    justificativa.append(ehs)
+    justificativa.append("NÃO houve ocorrência")
+    
+#print(justificativa)
+#exit()
+
+qualidade=("Houve ocorrência de Qualidade?")
+resposta=input("Houve ocorrência de Qualidade?\n 1 - Sim\n 2 - Não\n")
+if resposta == "1":
+    positivo= input("Qual foi a ocorrência?\n")
+    justificativa.append(qualidade)
+    justificativa.append(positivo)
+    
+
+empilhadeira=("Foi realizado o Checklist nas Empilhadeiras?")
+resposta=input("Foi realizado o Checklist nas Empilhadeiras?\n 1 - Sim\n 2 - Não\n")
+if resposta == "1":
+    positivo= input("Necessário carregar ou resisão/manutenção?\n")
+    justificativa.append(empilhadeira)
+    justificativa.append(positivo)
+    
+elif resposta == "2":
+    negativo= input("Porque não foi realizado o Checklist nas Empilhadeiras?\n")
+    justificativa.append(empilhadeira)
+    justificativa.append(negativo)
+    
+
+resposta=input("Estamos em Campanha?\n 1 - Sim\n 2 - Não\n")
+if resposta == "1":
+
+    #Se for 1 seguiremos com o código, se for 2 iremos para fora de campanha que é o momento de limpar o setor
+
+    safety=("Foi realizado o Checklist de Safety Startup?")
+    resposta=input("Foi realizado o Checklist de Safety Startup?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Alguma falha durante o teste?\n")
+        justificativa.append(safety)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= input("Porque não foi realizado o Checklist de Safety Startup?\n")
+        justificativa.append(safety)
+        justificativa.append(negativo)
+
+    quebraajuste=("Houve quebra ou ajuste significativo em equipamento?")
+    resposta=input("Houve quebra ou ajuste significativo em equipamento?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Conte de forma direta o que ocorreu e quais as medidas tomadas, adicione também o tempo estimado em cada atividade e se foi necessário abertura de ACR:\n")
+        justificativa.append(quebraajuste)
+        justificativa.append(positivo)
+
+    estacao1=("bulk alocado na Estação 1?")
+    resposta=input("Bulk alocado na Estação 1?\n 1 - Sim\n 2 - Não\n 3 - Não aplicavel\n")
+    if resposta == "1":
+        positivo= input("Qual o número do bulk?\n")
+        justificativa.append(estacao1)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= input("Porque não temos bulk alocado na Estação 1?\n")
+        justificativa.append(estacao1)
+        justificativa.append(negativo)
+        
+    elif resposta == "3":
+        print("Não aplicável")
+
+    estacao2=("bulk alocado na Estação 2?")
+    resposta=input("Bulk alocado na Estação 2?\n 1 - Sim\n 2 - Não\n 3 - Não aplicavel\n")
+    if resposta == "1":
+        positivo= input("Qual o número do bulk?\n")
+        justificativa.append(estacao2)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= input("Porque não temos bulk alocado na Estação 2?\n")
+        justificativa.append(estacao2)
+        justificativa.append(negativo)
+        
+    elif resposta == "3":
+        print("Não aplicável")
+
+    bulksdefora=("Quantos Bulk de fora?")
+    positivo= input("Quantos Bulk de fora?\n")
+    justificativa.append(bulksdefora)
+    justificativa.append(positivo)
+
+    pedirbulk=("Necessário pedir bulk?")
+    resposta=input("Necessário pedir bulk?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Foi solicitado o bulk para que horas?\n")
+        justificativa.append(pedirbulk)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= print("NÃO\n")
+        justificativa.append(pedirbulk)
+        justificativa.append(negativo)
+
+    carbonatos=("Quantos carbonatos fabricados e quantos aprovados?")
+    positivo= input("Quantos carbonatos fabricados e quantos aprovados?\n")
+    justificativa.append(carbonatos)
+    justificativa.append(positivo)
+
+    pedircarbonato=("Necessário pedir Carbonato?")
+    resposta=input("Necessário pedir Carbonato?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Foi solicitado o Carbonato para que horas?\n")
+        justificativa.append(pedircarbonato)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= print("NÃO\n")
+        justificativa.append(pedircarbonato)
+        justificativa.append(negativo)
+
+    bulksfabriados=("Quantos Bulk fabricados no turno?")
+    positivo= input("Quantos Bulk fabricados no turno?\n")
+    justificativa.append(bulksfabriados)
+    justificativa.append(positivo)
+
+    carbonatosecamos=("Quantos Carbonatos Secamos no turno?\n")
+    positivo=input("Quantos Carbonatos Secamos no turno?\n")
+    justificativa.append(carbonatosecamos)
+    justificativa.append(positivo)
+
+    processos=("Processos em andamento durante a passagem de turno?")
+    resposta=input("Processos em andamento durante a passagem de turno?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Quais processos estão em andamento?\n")
+        justificativa.append(processos)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= print("NÃO\n")
+        justificativa.append(processos)
+        justificativa.append(negativo)
+    pendencias=("Pendências no SAP?")
+    resposta=input("Pendências no SAP?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Quais pendências no SAP?\n")
+        justificativa.append(pendencias)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= print("NÃO\n")
+        justificativa.append(pendencias)
+        justificativa.append(negativo)
+    pasx=("Pendências no sistema de PASX?")
+    resposta=input("Pendências no sistema de PASX?\n 1 - Sim\n 2 - Não\n")
+    if resposta == "1":
+        positivo= input("Quais pendências no sistema de PASX?\n")
+        justificativa.append(pasx)
+        justificativa.append(positivo)
+        
+    elif resposta == "2":
+        negativo= print("NÃO\n")
+        justificativa.append(pasx)
+        justificativa.append(negativo)
+
+print(justificativa)
+
